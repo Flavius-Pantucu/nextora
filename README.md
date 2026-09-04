@@ -157,6 +157,10 @@ npm run db:down     # stop Postgres (the volume survives)
 Postgres is published on **5433**, not 5432, so a locally installed Postgres is left
 alone. `DATABASE_URL` in `.env.local` has to agree with it.
 
+To run against a hosted database (Neon, Supabase, RDS) instead, put its URL in
+`DATABASE_URL` and skip `db:up` — `db:migrate` reads the same `.env.local` the app
+does, so both always talk to the same database. Nothing else changes.
+
 ---
 
 ## Using it

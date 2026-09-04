@@ -1,28 +1,21 @@
 {
-  "name": "CV Builder Pro",
-  "short_name": "CV Builder",
-  "description": "Professional CV/Resume Builder - Create stunning resumes with multiple templates",
+  "name": "Nextora",
+  "short_name": "Nextora",
+  "description": "Author your CV once, render it through faithful replicas of published resume formats, export a PDF that matches the preview.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#3b82f6",
-  "orientation": "portrait-primary",
+  "background_color": "#F2ECDC",
+  "theme_color": "#F2ECDC",
   "icons": [
     {
-      "src": "/vite.svg",
-      "sizes": "32x32",
+      "src": "/favicon.svg",
+      "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
-  "categories": ["productivity", "business"],
-  "shortcuts": [
-    {
-      "name": "Create New CV",
-      "short_name": "New CV",
-      "description": "Start creating a new CV profile",
-      "url": "/?action=new",
-      "icons": [{ "src": "/vite.svg", "sizes": "32x32" }]
-    }
+  "categories": [
+    "productivity",
+    "business"
   ]
 }

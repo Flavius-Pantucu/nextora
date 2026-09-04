@@ -1,0 +1,24 @@
+# Postgres for Nextora. One database, one volume, nothing else — the app is
+# single-user and the backend runs on the host with `npm run dev`.
+services:
+    postgres:
+        image: postgres:17-alpine
+        container_name: nextora-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: nextora
+            POSTGRES_PASSWORD: nextora
+            POSTGRES_DB: nextora
+        ports:
+            # 5433 on the host: leaves a locally installed Postgres on 5432 alone.
+            - "5433:5432"
+        volumes:
+            - nextora-pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U nextora -d nextora"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+volumes:
+    nextora-pgdata:

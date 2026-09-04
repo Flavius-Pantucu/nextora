@@ -1,125 +1,575 @@
+@import "./fonts.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ===========================================================================
+   THE ACETATE TAB BOARD
+   A boxed-software reference manual open at a tabbed division. The board is
+   the ground, the leaf is the hinged acetate the editor sits on, and the CV
+   is the top-ply sheet lying on top of everything.
+   =========================================================================== */
+
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 222.2 84% 4.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
-        --primary: 222.2 47.4% 11.2%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 222.2 84% 4.9%;
-        --radius: 0.5rem;
+        /* -- Board and leaf ------------------------------------------------ */
+        --board: #f2ecdc;
+        --board-sunk: #e7dfc9;
+        --leaf: #fbf8ef;
+        --leaf-edge: #ddd4bc;
+
+        /* -- Ink ----------------------------------------------------------- */
+        --ink: #16171a;
+        --ink-2: #4a4a48;
+        --ink-3: #6b6a62;
+        --rule: rgba(22, 23, 26, 0.2);
+        --rule-strong: rgba(22, 23, 26, 0.42);
+
+        /* -- Reserved colours ----------------------------------------------
+           Chrome yellow means "this commits" and nothing else, anywhere.
+           Vermilion is held out of the divider set entirely: it is errata. */
+        --commit: #f2b707;
+        --commit-hover: #ffc82b;
+        --commit-ink: #16171a;
+        --errata: #b62f24;
+
+        /* -- The eight divider boards --------------------------------------
+           One saturated hue per division, at full strength, from the wheel.
+           Neither chrome yellow nor vermilion appears here. */
+        --div-personal: #1b4fa0; /* ultramarine */
+        --div-experience: #b44e15; /* oxide orange */
+        --div-education: #37823c; /* grass */
+        --div-skills: #0e7580; /* teal */
+        --div-projects: #64459b; /* violet */
+        --div-certifications: #8a4a2a; /* sienna */
+        --div-languages: #6c7729; /* olive */
+        --div-hobbies: #8c2f3f; /* oxblood */
+
+        /* The active division's hue, set on the shell by the tab rail. */
+        --division: var(--div-personal);
+
+        /* Text on a full-strength divider board. */
+        --tab-ink: #ffffff;
+
+        /* -- Faces --------------------------------------------------------- */
+        --font-head: "Archivo", "Helvetica Neue", Arial, sans-serif;
+        --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+        --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+        /* -- Motion --------------------------------------------------------
+           Nothing eases and nothing fades. Every change is a two-frame step
+           hinged at the punched edge. */
+        --hinge: 90ms steps(2, end);
+
+        /* -- The select caret ----------------------------------------------
+           Native select buttons draw their arrow hard against the border and
+           ignore padding on some engines, so the field paints its own. */
+        --caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' viewBox='0 0 9 6' fill='none' stroke='%236b6a62' stroke-width='1.4'%3E%3Cpath d='M1 1.2 4.5 4.7 8 1.2'/%3E%3C/svg%3E");
+
+        /* -- Print grain ---------------------------------------------------- */
+        --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='0.055'/%3E%3C/svg%3E");
+
+        color-scheme: light;
     }
 
     .dark {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 210 40% 98%;
-        --primary-foreground: 222.2 47.4% 11.2%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 212.7 26.8% 83.9%;
-    }
-}
+        /* The manual closed on the desk after dark: the board goes to millboard
+           and the ink inverts. The CV sheet never follows — it is paper. */
+        --board: #23211c;
+        --board-sunk: #1a1915;
+        --leaf: #2d2b24;
+        --leaf-edge: #45412f;
 
-@layer base {
+        --ink: #f2ecda;
+        --ink-2: #c4bda8;
+        --ink-3: #9b937f;
+        --rule: rgba(242, 236, 218, 0.18);
+        --rule-strong: rgba(242, 236, 218, 0.4);
+
+        --commit: #f2b707;
+        --commit-hover: #ffc82b;
+        --commit-ink: #16171a;
+        --errata: #ef6a5c;
+
+        --div-personal: #4d84dd;
+        --div-experience: #e07a37;
+        --div-education: #5eb463;
+        --div-skills: #2ba3b0;
+        --div-projects: #9a7ad4;
+        --div-certifications: #c0784b;
+        --div-languages: #a3b34a;
+        --div-hobbies: #d1607a;
+
+        /* The dark theme lifts every divider hue, and white stops holding
+           on them; near-black clears 5:1 on all eight. */
+        --tab-ink: #16171a;
+
+        --caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' viewBox='0 0 9 6' fill='none' stroke='%239b937f' stroke-width='1.4'%3E%3Cpath d='M1 1.2 4.5 4.7 8 1.2'/%3E%3C/svg%3E");
+
+        color-scheme: dark;
+    }
+
     * {
-        @apply border-border;
+        border-color: var(--rule);
     }
+
+    /* The exporter's rasteriser finds a font's baseline by putting a 1x1 probe
+       image next to a line of text and reading how far down it sits. Preflight
+       makes every img `display: block; height: auto`, which drops that probe
+       onto its own line — so the measured baseline came back a whole line-height
+       deep and every line of text in the PDF was drawn about half an em below
+       where the preview draws it. Most visibly in Jake's Resume, where it put
+       each section rule straight through its heading. Nothing else in the app
+       is a 1x1 image. */
+    img[width="1"][height="1"] {
+        display: inline;
+        height: 1px;
+    }
+
+    html {
+        font-size: 16px;
+    }
+
     body {
-        @apply bg-background text-foreground;
+        margin: 0;
+        background-color: var(--board);
+        color: var(--ink);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow: hidden;
+        /* The shell is the scroll container, never the document. Without this
+           a phone rubber-bands the whole board when the leaf hits its end. */
+        overscroll-behavior: none;
+    }
+
+    /* ---- Browser surfaces. These ship with the design, not with Chrome. --- */
+
+    /* Selection belongs to the open division, not to the commit colour. */
+    ::selection {
+        background: var(--division);
+        color: #ffffff;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+        border-radius: 1px;
+    }
+
+    /* On a full-strength divider board the ink ring disappears, so the ring
+       flips to the leaf colour instead. */
+    .on-division :focus-visible {
+        outline-color: var(--leaf);
+    }
+
+    ::-webkit-scrollbar {
+        width: 11px;
+        height: 11px;
+    }
+    ::-webkit-scrollbar-track {
+        background: var(--board-sunk);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: var(--rule-strong);
+        border: 3px solid var(--board-sunk);
+        border-radius: 0;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--ink-3);
+    }
+    ::-webkit-scrollbar-corner {
+        background: var(--board-sunk);
+    }
+
+    input,
+    textarea,
+    select,
+    button {
+        font: inherit;
+        color: inherit;
+        caret-color: var(--division);
+    }
+
+    /* Numbers in machine voice are always tabular — dates and page counts must
+       sit in a column. */
+    .machine,
+    .mono {
+        font-variant-numeric: tabular-nums;
     }
 }
 
-html {
-    font-size: 16px;
+@layer components {
+    /* ---- The board ----------------------------------------------------- */
+
+    .board {
+        background-color: var(--board);
+        background-image: var(--grain);
+    }
+
+    /* ---- A hinged leaf: one short hard shadow along its cut side only. --- */
+
+    .leaf {
+        background-color: var(--leaf);
+        background-image: var(--grain);
+        box-shadow: -3px 0 6px -2px rgba(22, 23, 26, 0.22);
+    }
+    .dark .leaf {
+        box-shadow: -3px 0 6px -2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ---- Rubrics: the manual's small machine-voice labels. --------------- */
+
+    .rubric {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .rubric-rule {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .rubric-rule::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--rule);
+    }
+
+    /* ---- The column law -------------------------------------------------
+       One text block, flush left. Every rubric sits on its own line above the
+       fields it opens, its rule running out to the edge, so the division head,
+       the rubrics and every field share a single left margin. */
+
+    .leaf-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 1.1rem;
+        align-items: start;
+        /* The leaf is taller than most divisions hold. Without this the grid's
+           default stretch pads every row out to fill the height, so a short
+           division floats down the leaf instead of starting at its head. */
+        align-content: start;
+    }
+
+    /* ---- Heads: Archivo caps, hung tight. -------------------------------- */
+
+    .head {
+        font-family: var(--font-head);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+        line-height: 0.95;
+        color: var(--ink);
+    }
+
+    /* ---- Controls -------------------------------------------------------- */
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 34px;
+        padding: 0 14px;
+        border: 1px solid var(--rule-strong);
+        background: transparent;
+        color: var(--ink);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color var(--hinge), color var(--hinge), border-color var(--hinge);
+    }
+    .btn:hover:not(:disabled) {
+        background: var(--ink);
+        color: var(--leaf);
+        border-color: var(--ink);
+    }
+    .btn:active:not(:disabled) {
+        transform: translateY(1px);
+    }
+    .btn:disabled {
+        opacity: 0.42;
+        cursor: not-allowed;
+    }
+
+    /* The one action that commits. Chrome yellow appears nowhere else. */
+    .btn-commit {
+        background: var(--commit);
+        border-color: var(--ink);
+        color: var(--commit-ink);
+        font-weight: 700;
+    }
+    .btn-commit:hover:not(:disabled) {
+        background: var(--commit-hover);
+        color: var(--commit-ink);
+        border-color: var(--ink);
+    }
+
+    .btn-quiet {
+        border-color: transparent;
+        color: var(--ink-3);
+    }
+    .btn-quiet:hover:not(:disabled) {
+        background: var(--ink);
+        color: var(--leaf);
+    }
+
+    .btn-sm {
+        height: 26px;
+        padding: 0 9px;
+        font-size: 10px;
+    }
+
+    .btn-icon {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border-color: transparent;
+        color: var(--ink-3);
+    }
+    .btn-icon:hover:not(:disabled) {
+        background: var(--ink);
+        color: var(--leaf);
+    }
+
+    /* ---- Fields ---------------------------------------------------------- */
+
+    .field {
+        width: 100%;
+        height: 34px;
+        padding: 0 10px;
+        background: var(--board);
+        border: 1px solid var(--rule-strong);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 14px;
+        transition: border-color var(--hinge), box-shadow var(--hinge);
+    }
+    select.field {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 28px;
+        background-image: var(--caret);
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 9px 6px;
+        cursor: pointer;
+    }
+    textarea.field {
+        height: auto;
+        min-height: 92px;
+        padding: 8px 10px;
+        line-height: 1.5;
+        resize: vertical;
+    }
+    .field::placeholder {
+        color: var(--ink-3);
+        font-style: italic;
+    }
+    .field:focus {
+        outline: none;
+        border-color: var(--division);
+        box-shadow: inset 0 -2px 0 var(--division);
+    }
+    .field:hover:not(:focus) {
+        border-color: var(--ink-3);
+    }
+
+    .field-label {
+        display: block;
+        margin-bottom: 5px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+    }
+
+    /* ---- Errata: the vermilion slip. Held out of every other use. -------- */
+
+    .errata {
+        color: var(--errata);
+        font-family: var(--font-mono);
+        font-size: 11px;
+    }
 }
 
-body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-        "Droid Sans", "Helvetica Neue", sans-serif;
+@layer components {
+    /* =======================================================================
+       THE MANUAL ON A SMALL BOARD
+       A phone cannot hold the spread, so the manual closes to one leaf at a
+       time: the divider tabs step across the head instead of down the fore
+       edge, and the sheet and the editor become two faces of the same board
+       that the foot switch turns between. Nothing is dropped — the whole
+       manual is still addressable, just one face at a time.
+       ======================================================================= */
+
+    /* The shell is exactly one screen. `100vh` is the wrong screen on a phone:
+       it measures past the address bar, so the foot switch sits under browser
+       chrome until the bar retracts. `dvh` is the visible box. */
+    .app-shell {
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    /* On the small board the sheet and the leaf are stacked in the same box and
+       only one is faced up. The other keeps its full layout — it is measured,
+       paginated and exported exactly as if it were on screen, which is what
+       lets EXPORT work from either face — but it takes no ink, no focus and no
+       place in the reading order. Scoped to the small board, so the shell can
+       carry the class unconditionally and the wide spread ignores it. */
+    @media (max-width: 1023.98px) {
+        .face-down {
+            visibility: hidden;
+        }
+    }
+
+    /* ---- Divider tabs stepped across the head ---------------------------- */
+
+    .tab-strip {
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+    }
+    .tab-strip::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Same law as the fore-edge rail, turned through ninety degrees: a tab is
+       as wide as its division is deep. Growth only spends free space, so when
+       eight tabs no longer fit the strip scrolls instead of crushing them. */
+    .tab-head {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        flex-basis: 0;
+        flex-shrink: 0;
+        min-width: max-content;
+        padding: 8px 12px;
+        border-right: 1px solid rgba(0, 0, 0, 0.25);
+        color: var(--tab-ink);
+        transition: padding var(--hinge), margin var(--hinge);
+    }
+    /* An unopened tab sits a step back from the head, the way an unused divider
+       tab sits below the one pulled forward. */
+    .tab-head[data-open="false"] {
+        margin-top: 6px;
+        box-shadow: inset 0 -6px 10px -8px rgba(0, 0, 0, 0.55);
+    }
+    /* The opened tab runs down into the leaf: they are one board. */
+    .tab-head[data-open="true"] {
+        margin-top: 0;
+        margin-bottom: -1px;
+        padding-bottom: 9px;
+    }
+
+    /* ---- The foot switch: which face of the board is up ------------------ */
+
+    .foot-switch {
+        display: flex;
+        align-items: stretch;
+        border-top: 1px solid var(--rule-strong);
+        padding-bottom: env(safe-area-inset-bottom);
+        background: var(--board);
+    }
+    .foot-switch button {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 48px;
+        border: 0;
+        border-right: 1px solid var(--rule);
+        background: transparent;
+        color: var(--ink-3);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color var(--hinge), color var(--hinge);
+    }
+    .foot-switch button:last-child {
+        border-right: 0;
+    }
+    .foot-switch button[aria-pressed="true"] {
+        background: var(--ink);
+        color: var(--leaf);
+        font-weight: 700;
+    }
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+/* ---- Touch ---------------------------------------------------------------
+   A finger is not a cursor. Every control the manual offers grows to a real
+   target, and fields go to 16px because anything smaller makes iOS Safari zoom
+   the whole board in the moment you tap into one — which was, on its own,
+   enough to make the app unusable on a phone. */
+@media (pointer: coarse) {
+    .btn {
+        height: 40px;
+        padding: 0 16px;
+    }
+    .btn-sm {
+        height: 34px;
+        padding: 0 12px;
+    }
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+    }
+    .field {
+        height: 42px;
+        font-size: 16px;
+    }
+    textarea.field {
+        font-size: 16px;
+    }
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+/* The CV sheet is paper. It never inherits the shell's theme, its grain, or
+   its ink — only the templates decide what is inside it. */
+.cv-sheet {
+    background: #ffffff;
+    color: #000000;
+    color-scheme: light;
 }
 
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-/* Dark mode scrollbar */
-.dark ::-webkit-scrollbar-track {
-    background: #1f2937;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-    background: #4b5563;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-    background: #6b7280;
-}
-
-/* Print styles */
 @media print {
     @page {
         size: A4;
         margin: 0;
     }
-
     body {
-        margin: 0;
-        padding: 0;
+        overflow: visible;
     }
 }
 
-/* Ensure proper rendering for export */
-#cv-preview img {
-    max-width: 100%;
-    height: auto;
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 1ms !important;
+        animation-duration: 1ms !important;
+    }
 }

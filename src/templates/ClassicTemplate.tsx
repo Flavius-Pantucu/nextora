@@ -1,166 +1,214 @@
-import React from 'react';
-import { CVData } from '../types/cv.types';
+import type { CSSProperties, ReactNode } from "react";
+import type { TemplateProps } from "./paper";
+import { PAGE, dateRange, entryBullets, groupSkills, pt, toLines } from "./paper";
 
-interface TemplateProps {
-  data: CVData;
+/* =============================================================================
+   The classic single-column resume — the Times-set format that university
+   career offices have handed out for thirty years and that every applicant
+   tracking system parses without complaint.
+
+   Times New Roman throughout. Tinos is metric-compatible with it, so the line
+   breaks are identical whether or not the reader has Times installed, which is
+   what keeps the export identical to the preview.
+
+   0.75in margins. Name 16pt bold caps, tracked. Section heads 11pt bold caps
+   over a rule. Body 10.5pt.
+   ========================================================================== */
+
+const MARGIN_X = 0.75 * 96;
+const MARGIN_Y = 0.7 * 96;
+
+export const classicPagePadding = { top: MARGIN_Y, bottom: MARGIN_Y };
+
+const serif = '"Tinos", "Times New Roman", Times, serif';
+
+const body: CSSProperties = { fontSize: pt(10.5), lineHeight: 1.28 };
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+    return (
+        <section data-block style={{ marginTop: 13 }}>
+            <h2
+                style={{
+                    fontSize: pt(11),
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    margin: 0,
+                    paddingBottom: 2,
+                    borderBottom: "1px solid #000",
+                }}
+            >
+                {title}
+            </h2>
+            <div style={{ marginTop: 6 }}>{children}</div>
+        </section>
+    );
 }
 
-export const ClassicTemplate: React.FC<TemplateProps> = ({ data }) => {
-  const { personal, education, experience, skills, projects, certifications, languages, hobbies } = data;
-
-  return (
-    <div className="bg-white text-black p-12 min-h-[297mm]" style={{ fontFamily: 'Georgia, serif' }}>
-      {/* Header */}
-      <div className="text-center border-b-2 border-black pb-4 mb-6">
-        <h1 className="text-4xl font-bold mb-2">{personal.name || 'Your Name'}</h1>
-        <div className="text-sm space-x-3">
-          {personal.email && <span>{personal.email}</span>}
-          {personal.phone && <span>•</span>}
-          {personal.phone && <span>{personal.phone}</span>}
-          {personal.location && <span>•</span>}
-          {personal.location && <span>{personal.location}</span>}
-        </div>
-        {personal.linkedin && (
-          <div className="text-sm mt-1">{personal.linkedin}</div>
-        )}
-      </div>
-
-      {/* Photo */}
-      {personal.photoBase64 && (
-        <div className="flex justify-center mb-6">
-          <img 
-            src={personal.photoBase64} 
-            alt="Profile" 
-            className="w-32 h-40 object-cover border-2 border-black"
-          />
-        </div>
-      )}
-
-      {/* Summary */}
-      {personal.summary && (
-        <div className="mb-6">
-          <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">PROFESSIONAL SUMMARY</h2>
-          <p className="text-sm leading-relaxed">{personal.summary}</p>
-        </div>
-      )}
-
-      {/* Experience */}
-      {experience.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">EXPERIENCE</h2>
-          <div className="space-y-4">
-            {experience.map((exp) => (
-              <div key={exp.id}>
-                <div className="flex justify-between items-baseline mb-1">
-                  <h3 className="font-bold">{exp.position}</h3>
-                  <span className="text-sm">{exp.dates.from} - {exp.dates.to}</span>
+function Entry({
+    left,
+    right,
+    subLeft,
+    subRight,
+    bullets,
+}: {
+    left: string;
+    right: string;
+    subLeft: string;
+    subRight: string;
+    bullets: string[];
+}) {
+    const row: CSSProperties = { display: "flex", justifyContent: "space-between", gap: 18, ...body };
+    return (
+        <div data-block style={{ marginBottom: 9 }}>
+            <div style={row}>
+                <span style={{ fontWeight: 700 }}>{left}</span>
+                <span style={{ fontWeight: 700, whiteSpace: "nowrap" }}>{right}</span>
+            </div>
+            {(subLeft || subRight) && (
+                <div style={{ ...row, fontStyle: "italic" }}>
+                    <span>{subLeft}</span>
+                    <span style={{ whiteSpace: "nowrap" }}>{subRight}</span>
                 </div>
-                <div className="text-sm italic mb-2">{exp.company}</div>
-                {exp.responsibilities && (
-                  <p className="text-sm mb-1">{exp.responsibilities}</p>
-                )}
-                {exp.achievements && (
-                  <p className="text-sm">{exp.achievements}</p>
-                )}
-              </div>
-            ))}
-          </div>
+            )}
+            {bullets.length > 0 && (
+                <ul style={{ margin: "3px 0 0", paddingLeft: 18, listStyleType: "disc", ...body }}>
+                    {bullets.map((bullet, index) => (
+                        <li key={index} style={{ marginBottom: 1 }}>
+                            {bullet}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
-      )}
+    );
+}
 
-      {/* Education */}
-      {education.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">EDUCATION</h2>
-          <div className="space-y-3">
-            {education.map((edu) => (
-              <div key={edu.id}>
-                <div className="flex justify-between items-baseline">
-                  <h3 className="font-bold">{edu.degree} in {edu.field}</h3>
-                  <span className="text-sm">{edu.dates.from} - {edu.dates.to}</span>
-                </div>
-                <div className="text-sm italic">{edu.school}</div>
-                {edu.gpa && <div className="text-sm">GPA: {edu.gpa}</div>}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+export function ClassicTemplate({ data, format }: TemplateProps) {
+    const { personal, education, experience, skills, projects, certifications, languages, hobbies } = data;
+    const contact = [personal.location, personal.phone, personal.email, personal.linkedin, personal.github].filter(Boolean);
 
-      {/* Skills */}
-      {skills.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">SKILLS</h2>
-          <div className="text-sm">
-            {skills.map((skill, idx) => (
-              <span key={skill.id}>
-                {skill.name}
-                {idx < skills.length - 1 && ' • '}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+    return (
+        <div
+            style={{
+                width: PAGE[format].w,
+                padding: `${MARGIN_Y}px ${MARGIN_X}px`,
+                fontFamily: serif,
+                color: "#000",
+                background: "#fff",
+                ...body,
+            }}
+        >
+            <header data-block style={{ textAlign: "center" }}>
+                <h1
+                    style={{
+                        fontSize: pt(16),
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.12em",
+                        margin: 0,
+                        lineHeight: 1.2,
+                    }}
+                >
+                    {personal.name || "Your Name"}
+                </h1>
+                {personal.title && <div style={{ ...body, marginTop: 2 }}>{personal.title}</div>}
+                {contact.length > 0 && <div style={{ ...body, marginTop: 3 }}>{contact.join("  •  ")}</div>}
+            </header>
 
-      {/* Projects */}
-      {projects.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">PROJECTS</h2>
-          <div className="space-y-3">
-            {projects.map((project) => (
-              <div key={project.id}>
-                <h3 className="font-bold">{project.name}</h3>
-                {project.description && <p className="text-sm mb-1">{project.description}</p>}
-                {project.technologies && <p className="text-sm italic">Technologies: {project.technologies}</p>}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+            {personal.summary && (
+                <Section title="Summary">
+                    <p style={{ margin: 0, textAlign: "justify", ...body }}>{personal.summary}</p>
+                </Section>
+            )}
 
-      {/* Certifications */}
-      {certifications.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">CERTIFICATIONS</h2>
-          <div className="space-y-2">
-            {certifications.map((cert) => (
-              <div key={cert.id} className="text-sm">
-                <span className="font-bold">{cert.name}</span> - {cert.issuer} ({cert.date})
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+            {experience.length > 0 && (
+                <Section title="Professional Experience">
+                    {experience.map((item) => (
+                        <Entry
+                            key={item.id}
+                            left={item.company}
+                            right={item.location}
+                            subLeft={item.position}
+                            subRight={dateRange(item.dates)}
+                            bullets={entryBullets(item)}
+                        />
+                    ))}
+                </Section>
+            )}
 
-      {/* Languages */}
-      {languages.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">LANGUAGES</h2>
-          <div className="text-sm">
-            {languages.map((lang, idx) => (
-              <span key={lang.id}>
-                {lang.name}{lang.level && ` (${lang.level})`}
-                {idx < languages.length - 1 && ' • '}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+            {education.length > 0 && (
+                <Section title="Education">
+                    {education.map((item) => (
+                        <Entry
+                            key={item.id}
+                            left={item.school}
+                            right={item.location}
+                            subLeft={[item.degree, item.field].filter(Boolean).join(" in ")}
+                            subRight={dateRange(item.dates)}
+                            bullets={item.gpa ? [`GPA: ${item.gpa}`] : []}
+                        />
+                    ))}
+                </Section>
+            )}
 
-      {/* Hobbies */}
-      {hobbies.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">INTERESTS</h2>
-          <div className="text-sm">
-            {hobbies.map((hobby, idx) => (
-              <span key={hobby.id}>
-                {hobby.name}
-                {idx < hobbies.length - 1 && ' • '}
-              </span>
-            ))}
-          </div>
+            {projects.length > 0 && (
+                <Section title="Projects">
+                    {projects.map((item) => (
+                        <Entry
+                            key={item.id}
+                            left={item.name}
+                            right={item.url ?? ""}
+                            subLeft={item.technologies}
+                            subRight={dateRange(item.dates)}
+                            bullets={toLines(item.description)}
+                        />
+                    ))}
+                </Section>
+            )}
+
+            {skills.length > 0 && (
+                <Section title="Skills">
+                    {groupSkills(skills).map(({ category, items }) => (
+                        <div key={category} data-block style={{ ...body, marginBottom: 2 }}>
+                            <strong style={{ fontWeight: 700 }}>{category}:</strong>{" "}
+                            {items.map((skill) => skill.name).join(", ")}
+                        </div>
+                    ))}
+                </Section>
+            )}
+
+            {certifications.length > 0 && (
+                <Section title="Certifications">
+                    {certifications.map((item) => (
+                        <div
+                            key={item.id}
+                            data-block
+                            style={{ display: "flex", justifyContent: "space-between", gap: 18, ...body, marginBottom: 2 }}
+                        >
+                            <span>
+                                <strong style={{ fontWeight: 700 }}>{item.name}</strong>
+                                {item.issuer && `, ${item.issuer}`}
+                            </span>
+                            <span style={{ whiteSpace: "nowrap" }}>{item.date}</span>
+                        </div>
+                    ))}
+                </Section>
+            )}
+
+            {languages.length > 0 && (
+                <Section title="Languages">
+                    <div style={body}>
+                        {languages.map((item) => `${item.name}${item.level ? ` (${item.level})` : ""}`).join(", ")}
+                    </div>
+                </Section>
+            )}
+
+            {hobbies.length > 0 && (
+                <Section title="Interests">
+                    <div style={body}>{hobbies.map((item) => item.name).join(", ")}</div>
+                </Section>
+            )}
         </div>
-      )}
-    </div>
-  );
-};
+    );
+}

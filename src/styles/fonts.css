@@ -1,0 +1,76 @@
+/* ---------------------------------------------------------------------------
+   Application faces. Univers is not free; Archivo is the closest grotesque
+   with the same rigid caps. Sabon is not free; Source Serif 4 carries the same
+   colour at UI sizes. JetBrains Mono is the machine voice.
+   --------------------------------------------------------------------------- */
+@import "@fontsource/archivo/400.css";
+@import "@fontsource/archivo/500.css";
+@import "@fontsource/archivo/600.css";
+@import "@fontsource/archivo/700.css";
+@import "@fontsource/source-serif-4/400.css";
+@import "@fontsource/source-serif-4/400-italic.css";
+@import "@fontsource/source-serif-4/600.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/700.css";
+
+/* ---------------------------------------------------------------------------
+   Document faces. These belong to the CV templates, not to the application.
+   Each one is the face the template it replicates actually sets.
+   --------------------------------------------------------------------------- */
+
+/* Awesome-CV sets Roboto. Twenty Seconds CV sets Roboto too. */
+@import "@fontsource/roboto/300.css";
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource/roboto/400-italic.css";
+
+/* Deedy sets Lato. */
+@import "@fontsource/lato/100.css";
+@import "@fontsource/lato/300.css";
+@import "@fontsource/lato/400.css";
+@import "@fontsource/lato/700.css";
+@import "@fontsource/lato/900.css";
+@import "@fontsource/lato/400-italic.css";
+
+/* The classic single-column resume is set in Times. Tinos is metric-compatible
+   with Times New Roman, so the line breaks are identical on every platform —
+   which is what keeps the export matching the preview. */
+@import "@fontsource/tinos/400.css";
+@import "@fontsource/tinos/700.css";
+@import "@fontsource/tinos/400-italic.css";
+@import "@fontsource/tinos/700-italic.css";
+
+/* Jake's Resume is plain `article` with no font package, so it renders in
+   LaTeX's default Computer Modern Roman. The `computer-modern` package ships
+   these files but declares them with `font-style: roman`, which is not a legal
+   CSS value and makes every browser drop the rule. Redeclared here correctly. */
+@font-face {
+    font-family: "CMU Serif";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../../node_modules/computer-modern/fonts/cmu-serif-500-roman.woff2") format("woff2");
+}
+@font-face {
+    font-family: "CMU Serif";
+    font-style: italic;
+    font-weight: 400;
+    font-display: block;
+    src: url("../../node_modules/computer-modern/fonts/cmu-serif-500-italic.woff2") format("woff2");
+}
+@font-face {
+    font-family: "CMU Serif";
+    font-style: normal;
+    font-weight: 700;
+    font-display: block;
+    src: url("../../node_modules/computer-modern/fonts/cmu-serif-700-roman.woff2") format("woff2");
+}
+@font-face {
+    font-family: "CMU Serif";
+    font-style: italic;
+    font-weight: 700;
+    font-display: block;
+    src: url("../../node_modules/computer-modern/fonts/cmu-serif-700-italic.woff2") format("woff2");
+}
